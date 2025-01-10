@@ -24,11 +24,11 @@ jobs:
       # Étape 3 : Construisez l'image Docker
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/videochat:${{ github.sha }} .
-          docker tag ${{ secrets.DOCKER_USERNAME }}/videochat:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/videochat:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/videochat:latest .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/videochat:latest ${{ secrets.DOCKER_USERNAME }}/videochat:latest
 
       # Étape 4 : Poussez l'image vers Docker Hub
       - name: Push Docker Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/videochat:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/videochat:latest
+          
