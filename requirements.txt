@@ -6,6 +6,10 @@ openai
 python-dotenv==1.0.1
 tiktoken
 pypdf
+daphne
+channels
+gtts
+pillow
 djangorestframework
 PyPDF2
 python-dotenv==1.0.1
