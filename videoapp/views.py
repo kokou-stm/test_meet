@@ -109,7 +109,7 @@ import string
 
 
 
-
+@csrf_exempt
 def forgotpassword(request):
      if request.method =="POST":
           username = request.user.username
@@ -122,34 +122,116 @@ def forgotpassword(request):
                uid = urlsafe_base64_encode(force_bytes(user.id))
                current_host = request.META["HTTP_HOST"]
                Subject = "Password Reset VideoCall "
-               message = f"""
-               Hi {username},
-               Are you having trouble signing in?
-
-               Resetting your password is easy.
-               Just click on the url below and follow the instructions.
-               We will have you up and running in no time.
-
-
-              {current_host}/updatepassword/{token}/{uid}/
-
-               Note that this link is valid for 1 hour.
-
-               If you did not make this request then please ignore this email. 
                
-               Thanks,
-               VideoCall Authentication
-               """
+               code_message= f"""
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Code de Vérification</title>
+                     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+                        <style>
+                            body {{
+                                font-family: Arial, sans-serif;
+                                background-color: #f4f7fa;
+                                color: #333;
+                                margin: 0;
+                                padding: 0;
+                            }}
+                            .container {{
+                                max-width: 600px;
+                                margin: 20px auto;
+                                padding: 20px;
+                                background-color: #ffffff;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            }}
+                            h2 {{
+                                color: #007bff;
+                                text-align: center;
+                            }}
+                            p {{
+                                font-size: 16px;
+                                line-height: 1.6;
+                                margin: 10px 0;
+                            }}
+                            .code{{
+                                display: block;
+                                font-size: 24px;
+                                font-weight: bold;
+                                color: #007bff;
+                                text-align: center;
+                                margin: 20px 0;
+                                padding: 15px;
+                                background-color: #f1faff;
+                                border: 2px solid #007bff;
+                                border-radius: 8px;
+                            }}
+                            .footer {{
+                                text-align: center;
+                                font-size: 14px;
+                                margin-top: 20px;
+                                color: #888;
+                            }}
+                            .button {{
+                            display: inline-block;
+                            padding: 12px 20px;
+                            margin-top: 20px;
+                            background-color: #007bff;
+                            color: #fff;
+                            text-decoration: none;
+                            border-radius: 4px;
+                            text-align: center;
+                            font-size: 16px;
+                            font-weight: bold;
+                            border: 1px solid #007bff;
+                        }}
+                        .button:hover {{
+                            background-color: #0056b3;
+                            border-color: #0056b3;
+                        }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h2>Hi {username},</h2>
+                            <p>Are you having trouble signing in <strong>videoCall</strong>?
+
+                            Resetting your password is easy.
+                            Just click on the url below and follow the instructions.
+                            We will have you up and running in no time.
+                            </p>
+                        
+                              {current_host}/updatepassword/{token}/{uid}/
+                         
+                            <p>Note that this link is valid for 1 hour.
+
+                             If you did not make this request then please ignore this email. 
+               
+                            </p>
+                            <div class="footer">
+                                <p>Thanks,
+                                  VideoCall Authentication.</p>
+                            </div>
+                        </div>
+                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+                    </body>
+                    </html>
+                    """
+               emailsender(Subject, code_message, user.email)
+              
                
             
                #message = mark_safe(render_to_string("emailpsswdreset.html", {}))
                
-               email = EmailMessage(Subject,
+               '''email = EmailMessage(Subject,
                              message,
                              f"VideoCall <{settings.EMAIL_HOST}>",
                              [user.email])
 
-               email.send()
+               email.send()'''
                messages.success(request, f"We have send a reset password email to {user.email}, open it and follow the instructions !",)
           else:
                print("User not exist")
@@ -157,6 +239,7 @@ def forgotpassword(request):
      return render(request, "account/forgot_password.html")
 
 
+@csrf_exempt
 def updatepassword(request, token, uid):
     print(request.user.username, token, uid)
     try:
@@ -193,7 +276,7 @@ def updatepassword(request, token, uid):
 
 
 
-
+@csrf_exempt
 def register(request):
     mess = ""
     if request.method == "POST":
@@ -226,33 +309,100 @@ def register(request):
                     subject = "Bienvenue sur videoCall !"
 
                     email_message = f"""
-                    Cher(e) {username},
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Bienvenue sur videoCall !</title>
+                        <style>
+                            body {{
+                                font-family: Arial, sans-serif;
+                                background-color: #f4f7fa;
+                                color: #333;
+                                margin: 0;
+                                padding: 0;
+                            }}
+                            .container {{
+                                max-width: 600px;
+                                margin: 20px auto;
+                                padding: 20px;
+                                background-color: #ffffff;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            }}
+                            h1 {{
+                                color: #007bff;
+                                text-align: center;
+                            }}
+                            p {{
+                                font-size: 16px;
+                                line-height: 1.6;
+                                margin: 10px 0;
+                            }}
+                            ul {{
+                                font-size: 16px;
+                                margin: 10px 0;
+                            }}
+                            li {{
+                                margin-bottom: 8px;
+                            }}
+                            .highlight {{
+                                font-weight: bold;
+                                color: #007bff;
+                            }}
+                            .footer {{
+                                text-align: center;
+                                font-size: 14px;
+                                margin-top: 20px;
+                                color: #888;
+                            }}
+                            .button {{
+                                display: inline-block;
+                                padding: 12px 20px;
+                                margin-top: 20px;
+                                background-color: #007bff;
+                                color: #fff;
+                                text-decoration: none;
+                                border-radius: 4px;
+                                text-align: center;
+                            }}
+                            .button:hover {{
+                                background-color: #0056b3;
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h1>Bienvenue sur videoCall, cher(e) {username} ! 🎉</h1>
+                            <p>Nous sommes ravis de t’accueillir sur videoCall ! Ton compte a été créé avec succès, et tu es maintenant prêt(e) à explorer l'univers passionnant des appels vidéo multilingues.</p>
+                            <p>Voici quelques fonctionnalités incroyables que tu peux découvrir dès maintenant :</p>
+                            <ul>
+                                <li><span class="highlight">Communique</span> avec des utilisateurs parlant différentes langues, avec ta voix instantanément traduite dans la langue de ton interlocuteur.</li>
+                                <li><span class="highlight">Brise les barrières linguistiques</span> et échange facilement avec des personnes parlant français, anglais, espagnol, et bien d’autres !</li>
+                                <li><span class="highlight">Profite d’une traduction fluide et en temps réel</span> grâce à notre technologie IA avancée.</li>
+                                <li><span class="highlight">Explore une large sélection de langues</span> pour une expérience de communication véritablement mondiale.</li>
+                            </ul>
+                            <p>Nous sommes impatients de t’aider à connecter avec le monde entier de manière inédite.</p>
+                            <p>Si tu as des questions ou besoin d’assistance, n’hésite pas à nous contacter à [ton adresse e-mail] ou à visiter notre page de support.</p>
+                            <p>Encore une fois, bienvenue sur videoCall ! Nous sommes ravis de t’avoir parmi nous.</p>
+                            <div class="footer">
+                                <p>Cordialement,</p>
+                                <p>L’équipe videoCall</p>
+                                <a href="[Lien vers ton site]" class="button">Découvrir videoCall</a>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
 
-                    Nous sommes ravis de t’accueillir sur videoCall ! 🎉
-
-                    Ton compte a été créé avec succès, et tu es maintenant prêt(e) à explorer l'univers passionnant des appels vidéo multilingues. Grâce à notre plateforme, tu peux te connecter avec des personnes du monde entier et profiter de la traduction vocale en temps réel lors de tes appels vidéo.
-
-                    Voici quelques fonctionnalités incroyables que tu peux découvrir dès maintenant :
-
-                    - Communique avec des utilisateurs parlant différentes langues, avec ta voix instantanément traduite dans la langue de ton interlocuteur.
-                    - Brise les barrières linguistiques et échange facilement avec des personnes parlant français, anglais, espagnol, et bien d’autres !
-                    - Profite d’une traduction fluide et en temps réel grâce à notre technologie IA avancée.
-                    - Explore une large sélection de langues pour une expérience de communication véritablement mondiale.
-
-                    Nous sommes impatients de t’aider à connecter avec le monde entier de manière inédite. Si tu as des questions ou besoin d’assistance, n’hésite pas à nous contacter à [ton adresse e-mail] ou à visiter notre page de support.
-
-                    Encore une fois, bienvenue sur videoCall ! Nous sommes ravis de t’avoir parmi nous.
-
-                    Cordialement,  
-                    L’équipe videoCall
                     """
-
-                    email = EmailMessage(subject,
+                    emailsender(subject, email_message, user.email)
+                    '''email = EmailMessage(subject,
                              email_message,
                              f"VideoCall <{settings.EMAIL_HOST}>",
                              [user.email])
 
-                    email.send()
+                    email.send()'''
                     mess = f"Welcome {user.username}, Your account is create successfully, to active your account, get you verification code in your email boss at {user.email}"
                         
                     messages.info(request, mess)
@@ -260,16 +410,74 @@ def register(request):
                     verification_code, created = VerificationCode.objects.get_or_create(user=user)
                     verification_code.generate_code()
                     print(verification_code.code)
-                    
-                    code = EmailMessage(
-                        'Votre code de vérification ',
-                        f'Bonjour,\n\nVotre code de vérification pour activer votre compte sur videoCall est : {verification_code.code}\n\nMerci de l\'utiliser pour valider votre inscription.',
-                        f"videoCall <{settings.EMAIL_HOST}>",
-                        [user.email]
-                    )
-
-
-                    code.send()
+                    code_subject = "Votre code d'activation videoCall !"
+                    code_message= f"""
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Code de Vérification</title>
+                        <style>
+                            body {{
+                                font-family: Arial, sans-serif;
+                                background-color: #f4f7fa;
+                                color: #333;
+                                margin: 0;
+                                padding: 0;
+                            }}
+                            .container {{
+                                max-width: 600px;
+                                margin: 20px auto;
+                                padding: 20px;
+                                background-color: #ffffff;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            }}
+                            h2 {{
+                                color: #007bff;
+                                text-align: center;
+                            }}
+                            p {{
+                                font-size: 16px;
+                                line-height: 1.6;
+                                margin: 10px 0;
+                            }}
+                            .code{{
+                                display: block;
+                                font-size: 24px;
+                                font-weight: bold;
+                                color: #007bff;
+                                text-align: center;
+                                margin: 20px 0;
+                                padding: 15px;
+                                background-color: #f1faff;
+                                border: 2px solid #007bff;
+                                border-radius: 8px;
+                            }}
+                            .footer {{
+                                text-align: center;
+                                font-size: 14px;
+                                margin-top: 20px;
+                                color: #888;
+                            }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h2>Bonjour,</h2>
+                            <p>Votre code de vérification pour activer votre compte sur <strong>videoCall</strong> est :</p>
+                            <div class="code">{verification_code.code}</div>
+                            <p>Merci de l'utiliser pour valider votre inscription.</p>
+                            <div class="footer">
+                                <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                    """
+                    emailsender(code_subject, code_message, user.email)
+                   
                     return redirect("code")
             except Exception as e:
                     print("error: ", e)
@@ -360,6 +568,8 @@ def create_meeting(request):
         password = request.POST.get('password')
         # Créer une réunion avec le nom et mot de passe fournis
         meeting = Meeting.objects.create(name=name, password=password, host=request.user )
+        meeting.users.add(request.user)
+        meeting.save()
         return redirect('home', meeting_id=meeting.id)
         #return redirect('join_meeting', meeting_id=meeting.id)
     return render(request, 'create_meeting.html')
@@ -367,11 +577,17 @@ def create_meeting(request):
 
 @login_required
 def home(request, meeting_id=None):
+    
     if meeting_id:
         meeting = Meeting.objects.get(id=meeting_id)
         rooms = Rooms.objects.filter(channel=meeting)
-        context = {"meeting_id": meeting, "rooms": rooms, "host": meeting.host} 
+        messages_chat = Chatmessages.objects.get(channel = meeting)
+        messages_chat  = [sms for sms in messages_chat.messages_chat]#.messages_chat
+        print("==="*5, messages_chat, "==="*5)
+        initial = request.user.username[0].upper()
+        context = {"meeting_id": meeting, "rooms": rooms, "host": meeting.host, 'messages_chat': messages_chat, "initial": initial} 
         return render(request, "home.html", context)
+    
     return render(request, "home.html")
 
 def join_meeting(request):
@@ -379,17 +595,22 @@ def join_meeting(request):
     if request.method == 'POST':
         entered_password = request.POST.get('password')
         name = request.POST.get('name')
-        meeting = Meeting.objects.get(name=name)
-        if entered_password == meeting.password:
-            if not meeting.users.filter(id=request.user.id).exists():
-                # Ajouter l'utilisateur s'il n'existe pas déjà
-                meeting.users.add(request.user)
-            return redirect('home', meeting_id=meeting.id)  # Rediriger vers la réunion
-        else:
+       
+        try: 
+            meeting = Meeting.objects.get(name=name)
+            if entered_password == meeting.password:
+                if not meeting.users.filter(id=request.user.id).exists():
+                    # Ajouter l'utilisateur s'il n'existe pas déjà
+                    meeting.users.add(request.user)
+                    meeting.save()
+                return redirect('home', meeting_id=meeting.id)  # Rediriger vers la réunion
+        except:
+           
+            messages.info(request, "dentifiant ou mot de passe incorrect ! ")
             # Mot de passe incorrect
-            return render(request, 'join_meeting.html', {'meeting': meeting, 'error': 'Mot de passe incorrect'})
-
-    return render(request, 'join_meeting.html', {'meeting': meeting})
+            return render(request, 'index.html', {'meeting': 'Mot de passe incorrect'})
+   
+    return render(request, 'index.html')
 
 
 
@@ -413,32 +634,85 @@ from .forms import *
 @csrf_exempt  # Permet des tests sans token CSRF (désactiver en production si non nécessaire)
 def create_room(request, channel_name):
     if request.method == 'POST':
-        print("Create Room ", )
+        print("Create Room ", channel_name )
+        meeting = Meeting.objects.get(name=channel_name)
         selected_choice = request.POST.get('unique_choice')  # Récupère la valeur choisie
+        print('select_c')
         # Récupère la valeur choisie
-        if selected_choice =='automatique':
-            meeting = Meeting.objects.get(name=channel_name)
+        if selected_choice =='manuel':
+            
             # Compte les salles liées à ce canal
             room_count = Rooms.objects.filter(channel=meeting).count()
+            nombre_de_salle = int(request.POST.get('nombre_de_salle'))
             print("roomcounr: ", room_count)
                 # Génère le nom de la nouvelle salle
-            room_name = f"{meeting.name}_salle{room_count + 1}"
-            roomadd = Rooms.objects.create(
-                 name=room_name,
-                 host= request.user,
-                 channel=meeting, 
-                 
-            )
-            roomadd.users.add(request.user)
-            roomadd.save()
+            for manual_room in range(1, nombre_de_salle+1):
+                room_name = f"{meeting.name}_salle{room_count + manual_room }"
+                roomadd = Rooms.objects.create(
+                    name=room_name,
+                    host= request.user,
+                    channel=meeting, 
+                    
+                )
+                roomadd.users.add(request.user)
+                roomadd.save()
             rooms = Rooms.objects.filter(channel=meeting).values()
             return JsonResponse({
                 'message': 'Choix soumis avec succès.',
                 'selected_choice': selected_choice,
                  'rooms': list(rooms),
             })
+        elif selected_choice =='automatique':
+             select_user= 0
+             participant_par_salle = int(request.POST.get('participant_par_salle'))
+             liste_users = [user_name for  user_name in meeting.users.all()] 
+             num_salles = (len(liste_users))//participant_par_salle
+             if ((len(liste_users))%participant_par_salle) != 0:
+                  num_salles +=1
+             room_count = Rooms.objects.filter(channel=meeting).count()
+             print("roomcounr: ", room_count, liste_users, num_salles)
+                # Génère le nom de la nouvelle salle
+             for i_room in range(1, num_salles+1):
+                print("val: ", i_room)
+                room_name = f"{meeting.name}_salle{room_count + i_room}"
+                print("val: ", room_name)
+                
+                roomadd = Rooms.objects.create(
+                    name=room_name,
+                    host= request.user,
+                    channel=meeting,    
+                )
+                try:
+                    roomadd.users.add(*liste_users[:participant_par_salle+1])
+                    liste_users = liste_users[participant_par_salle+1:]
+                    roomadd.save()
+                except:
+                    roomadd.users.add(*liste_users[:])
+                    
+                    roomadd.save()
+             rooms = Rooms.objects.filter(channel=meeting).values()
+             print("rooms: ", rooms)
+             return JsonResponse({
+                'message': 'Choix soumis avec succès.',
+                'selected_choice': selected_choice,
+                'rooms': list(rooms),
+            })
+            
+            
         return JsonResponse({'error': 'Aucun choix sélectionné.'}, status=400)
     return JsonResponse({'error': 'Méthode non autorisée.'}, status=405)
+
+from django.http import JsonResponse
+from .models import Rooms
+
+def get_rooms(request, channel_name):
+    meeting = Meeting.objects.get(name=channel_name)
+    #rooms = Rooms.objects.filter(channel=meeting).values()
+    rooms = Rooms.objects.filter(channel=meeting, users__id=request.user.id)
+    #print(rooms)
+    room_data = [{"name": room.name} for room in rooms]
+    
+    return JsonResponse({"rooms": room_data})
 
 
 @csrf_exempt  # Permet des tests sans token CSRF (désactiver en production si non nécessaire)
@@ -524,3 +798,84 @@ def upload_file(request):
         return JsonResponse({'file_url': file_url})
     return render(request, 'chat/upload.html')
 
+
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import smtplib, ssl
+
+email_address = 'voicetranslator0@gmail.com'
+email_password = 'rfqzyhocddgmehbe'
+
+smtp_address = 'smtp.gmail.com'
+smtp_port = 465
+
+def emailsender(Subject, html, user_email):
+    message = MIMEMultipart("alternative")
+    # on ajoute un sujet
+    message["Subject"] = Subject
+    # un émetteur
+    message["From"] = f"VideoCall <{email_address}>"
+    # un destinataire
+    message["To"] = user_email
+    # on crée deux éléments MIMEText 
+    html_mime = MIMEText(html, 'html')
+
+    # on attache ces deux éléments 
+    message.attach(html_mime)
+
+    # on crée la connexion
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as server:
+        # connexion au compte
+        server.login(email_address, email_password)
+        # envoi du mail
+        server.sendmail(email_address, user_email, message.as_string())
+
+
+
+
+
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.chains import RetrievalQA,  ConversationalRetrievalChain
+from langchain.memory import ConversationBufferMemory
+from langchain_openai import OpenAI, ChatOpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv, find_dotenv
+_ = load_dotenv(find_dotenv())
+openai.api_key ="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"
+os.environ["OPENAI_API_KEY"] ="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"
+
+embeddings = OpenAIEmbeddings()
+
+def boat(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        question = data.get('message', '')
+        print('La question: ', question)
+
+        llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+        folder_path = os.path.join(settings.MEDIA_ROOT, "videocall_boat")
+        vectordb =FAISS.load_local(folder_path, embeddings , allow_dangerous_deserialization=True )
+        memory = ConversationBufferMemory(
+        memory_key="chat_history",
+        output_key="answer",
+        return_messages=True
+        )
+        
+        qa = ConversationalRetrievalChain.from_llm(
+            llm,
+            retriever=vectordb.as_retriever(),
+            return_source_documents=True,
+            #chain_type_kwargs={"prompt": prompt},
+            return_generated_question=True,
+            memory=memory,
+        
+        )
+    
+        #question = "Qu'est ce que la cuisine?"
+        result = qa.invoke({"question": question})
+        
+
+        return JsonResponse({'response': result["answer"],})

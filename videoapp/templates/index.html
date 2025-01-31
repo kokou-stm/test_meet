@@ -215,8 +215,8 @@ https://templatemo.com/tm-569-edu-meeting
                                 <!--a class="btn btn-primary mt-5 p-2 redressed text-light" href="{% url 'home' %}" style="border-radius: 4em;">Rejoindre instantané</a>
                                 <a class="btn btn-outline-primary mt-5 p-2 redressed text-light" href="{% url 'home' %}" style="border-radius: 4em;">Rejoindre une reunion</a-->
                                 <div class="container text-center my-5 merriweather">
-                                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createMeetingModal">Créer une Réunion</button>
-                                  <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#joinMeetingModal">Rejoindre une Réunion</button>
+                                  <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createMeetingModal">Créer une Réunion</button>
+                                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#joinMeetingModal">Rejoindre une Réunion</button>
                                 </div>
                               </div>
                         </div>
@@ -1046,6 +1046,17 @@ https://templatemo.com/tm-569-edu-meeting
       });
   }
 </script>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script defer>
+    {% autoescape off %}
+    {% for ms in messages %}
+        swal('{{ms|safe}}');
+    {% endfor %}
+    {% endautoescape %}
+</script>
+
 
 </body>
 

@@ -4,3 +4,4 @@ from .models import *
 
 admin.site.register(Rooms)
 admin.site.register(Meeting)
+admin.site.register(Chatmessages)

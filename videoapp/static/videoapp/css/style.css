@@ -65,6 +65,7 @@ main {
     grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
     gap: 1em;
     height: 100%;
+    
 }
 
 
@@ -73,6 +74,7 @@ main {
     height: 100%;
     border-radius: 10px;
     overflow: hidden;
+    transform: scaleX(1); 
 }
 
 .video-containers {
@@ -87,14 +89,16 @@ main {
 .user-uid {
     display: flex;
     align-items: center;
+    position: absolute;
     column-gap: 1em;
+    /*   z-index: 90;*/
     background-color: #fffcfcfa;
     padding: 5px 10px;
     border-radius: 5px;
-    position: absolute;
+    z-index: 90;
     bottom: 10px;
     left: 10px;
-    z-index: 9999;
+   
     margin: 0;
     font-size: 18px;
 }

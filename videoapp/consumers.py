@@ -9,15 +9,21 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from asgiref.sync import sync_to_async
 from .models import *
-
+from channels.db import  database_sync_to_async
 
 
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_group_name = 'chat_room'
-        print("Connexion établie")
+        
+        self.room_group_name = self.scope["url_route"]["kwargs"]["room_name"]
+        print("Connexion établie",  self.room_group_name)
+       
+        meeting = await sync_to_async(Meeting.objects.get)(name = self.room_group_name)
+        chat_message, created = await sync_to_async(Chatmessages.objects.get_or_create)(channel=meeting)
+        #Chatmessages.objects.get_or_create(channel=meeting)
+        
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -29,11 +35,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-
+    
     async def receive(self, text_data):
-        print("receive, ", "=="*5, text_data)
+        #print("receive, ", "=="*5, text_data)
+        
         text_data_json = json.loads(text_data)
-        print("data: ", text_data_json)
+        #print("data: ", text_data_json)
         username = text_data_json.get('username')
         message = text_data_json.get('message')
         #numberOfDivs = text_data_json.get('numberOfDivs')
@@ -41,10 +48,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Séparer la fonction de récupération ou création d'utilisateur
         user, created = await sync_to_async(User.objects.get_or_create)(username=username)
+        meeting = await sync_to_async(Meeting.objects.get)(name = self.room_group_name)
+        chat_message = await sync_to_async(Chatmessages.objects.get)(channel=meeting)
         
+        if chat_message.messages_chat is None:
+            chat_message.messages_chat = []
         if 'message' in text_data_json:
-           
+            
             message = text_data_json['message']
+            
+            chat_message.messages_chat.append({
+                   'type': 'chat_message',
+                    'message': message,
+                    'username': username,
+                })
+            await sync_to_async(chat_message.save)()
+            '''chat_message.messages_chat.append({
+                   'type': 'chat_message',
+                    'message': message,
+                    'username': username,
+                })
+            chat_message.save()'''
+            
+           
+        
+            print("Message enregistré")
             print("Message reçu: ", message)
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -56,6 +84,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
         elif 'file' in text_data_json:
+            print("Receive: ", 'file')
             file_data = text_data_json['file']
             file_name = text_data_json['file_name']
             file_type = text_data_json['file_type']
@@ -64,10 +93,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             file_data = base64.b64decode(file_data)
             file_path = await sync_to_async(default_storage.save)(f"uploads/{file_name}", ContentFile(file_data))
             file_url = f"{settings.MEDIA_URL}{file_path}"
-
+            
             # Create ChatFile instance if you have such a model
             # await sync_to_async(ChatFile.objects.create)(user=user, file=file_path)
-
+            print("File url: ", file_url)  
+            chat_message.messages_chat.append({
+                    'type': 'chat_file',
+                    'file_url': file_url,
+                    'file_name': file_name,
+                    'username': username
+                })
+            chat_message.save()
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {

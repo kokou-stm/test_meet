@@ -47,3 +47,20 @@ class ChatFile(models.Model):
 class Messageschat(models.Model):
     identifiant = models.IntegerField(null= True, blank=True)
     text = models.CharField(max_length=255, null = True, blank=True)
+
+
+class Chatmessages(models.Model):
+    channel = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    messages = models.JSONField(blank=True, null=True)
+    messages_chat = models.JSONField(blank=True, null=True)
+    
+    def add_message(self, message):
+        """Ajoute un message à l'historique JSON et limite à 50 messages max."""
+        messages = self.messages
+        messages.append(message)
+
+        if len(messages) > 50:  # Limite le stockage à 50 messages
+            messages.pop(0)
+
+        self.messages = messages
+        self.save()

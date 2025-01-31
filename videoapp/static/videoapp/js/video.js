@@ -1,5 +1,5 @@
 console.log("Welcome");
-console.log("Welcome")
+
 
 // Reconnaissance vocale:
 let subscriptionKey = "GAhhrZCYQlVVFPpcyRRR2B2GypAFI9w1oxaYPlqTXOJIRaDt1chCJQQJ99AKACYeBjFXJ3w3AAAYACOGSatX";
@@ -217,6 +217,9 @@ document.getElementById('join-btn').addEventListener('click', async () => {
     config.uid = document.getElementById('username').value
     await joinStreams(channel_name)
     document.getElementById('join-wrapper').style.display = 'none'
+    
+     
+    
     document.getElementById('footer').style.display = 'flex'
     document.getElementById('bottom-bar').style.display = 'flex'
 })
@@ -352,9 +355,12 @@ let joinStreams = async (channel_add) => {
     
     //#7 - Create player and add it to player list
     let player = `<div class="video-containers" id="video-wrapper-${config.uid}">
-                        <p class="user-uid"><i id="volume-${config.uid}" class="fas fa-volume-up"></i>${config.uid}</p>
+                        <p class="user-uid" ><i id="volume-${config.uid}" class="fas fa-volume-up"></i>${config.uid}</p>
                         <div class="video-player player" id="stream-${config.uid}"></div>
                   </div>`
+
+    
+
 
     document.getElementById('user-streams').insertAdjacentHTML('beforeend', player);
     //#8 - Player user stream in div
@@ -431,11 +437,12 @@ document.addEventListener("DOMContentLoaded", () => {
       
 
             screenClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
             const tokenResponse = await fetch(`/generate_agora_token/${channel_name}`);
             const tokenData = await tokenResponse.json();
             await screenClient.join(config.appid, config.channel, tokenData.token, "ShareScreen");
 
-            localScreenTrack = await AgoraRTC.createScreenVideoTrack( {encoderConfig: "1080p_1"});
+            localScreenTrack = await AgoraRTC.createScreenVideoTrack( {encoderConfig: "1080p_1", mirror: false});
 
            // Envoyer un message pour notifier les utilisateurs distants
             client.sendStreamMessage("start", JSON.stringify({ type: "screen-share", action: "start" }));
@@ -449,7 +456,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
            // document.getElementById('user-streams').insertAdjacentHTML('beforeend', player);
 
-           // localScreenTrack.play("screen-share-player");
+             localScreenTrack.play("screen-share-player");
            
             // Réinitialiser les vidéos locales
                 Array.from(document.getElementById('user-streams').children).forEach(child => {
@@ -533,6 +540,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+// Fonction pour envoyer un message
+function sendhandMessage(text) {
+    console.log("Begin send Message")
+    const userInput = document.getElementById('user-input');
+    //const message = userInput.value.trim();
+    const message1 = document.getElementById('id_message_send_input');
+    const messageInput= `${currentUsername} hand ${text}`;
+    console.log("Message: ", messageInput, currentUsername)
+
+    if (messageInput || messageInput.trim() !== "") {
+        console.log("Message: ", messageInput, currentUsername);
+        // Envoyer le message via WebSocket
+        
+        chatSocket.send(JSON.stringify({
+            message: messageInput, 
+            username: currentUsername,
+            //numberOfDivs: numberOfDivs
+         }));
+
+    }
+}
+
 
  document.addEventListener("DOMContentLoaded", () => {
             // Gestion du bouton de main et de l'icône
@@ -541,12 +570,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const handPopup = document.getElementById("handpopup");
           
             handButton.addEventListener("click", () => {
-              if (handPopup.style.visibility === "hidden" || !handPopup.style.visibility) {
-                handPopup.style.visibility = "visible";
+              if (handIcon.classList.contains("fa-hand-sparkles")) {
+                //handPopup.style.visibility = "visible";
+                sendhandMessage("up")
                 handIcon.classList.replace("fa-hand-sparkles", "fa-hand-peace");
+                handButton.style.backgroundColor = 'rgb(207, 84, 84)';
               } else {
-                handPopup.style.visibility = "hidden";
+                //handPopup.style.visibility = "hidden";
                 handIcon.classList.replace("fa-hand-peace", "fa-hand-sparkles");
+                handButton.style.backgroundColor = 'transparent';
+                sendhandMessage("down")
               }
             });
           
